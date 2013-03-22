@@ -5,14 +5,15 @@ import psutil
 import hashlib
 import time
 import socket
-from struct import *
+from struct import pack, unpack
 from threading import Thread
 
-import os
+#import os
 import os.path
 #################################### Globals ####################################
 
 url_file_location = "/tmp/pi-py-stats.json"
+generate_time = 10 # seconds
 #################################### Functions network ####################################
 def recvpackage(socket_cliente,size_package):
     package = socket_cliente.recv(int(size_package))
@@ -83,6 +84,8 @@ class Stats(Thread):
     def run(self):
         seguir = True
         while seguir:
+            #calculate time generate stats
+            start = time.time()
             #calculate stats
             # speed network #
             network = pick_speed(2)
@@ -101,12 +104,11 @@ class Stats(Thread):
                 "hdd_use_home": psutil.disk_usage('/home')[3],
                 "cpu_use": psutil.cpu_percent(interval=1),#
                 "cpu_mhz": int(os.popen("cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq").read()[:-3]),
-                "temp": int(os.popen("cat /sys/class/thermal/thermal_zone0/temp").read()/1000)
+                "temp": 50#int(os.popen("cat /sys/class/thermal/thermal_zone0/temp").read()/1000)
             }
             data_string = json.dumps(data)
             #print 'ENCODED:', data_string
-            da = time.time()
-            temp = time.localtime(da)
+            temp = time.localtime(start)
             datatime = str(temp[2])+"/"+str(temp[1])+"/"+str(temp[0])+" "+str(temp[3])+"/"+str(temp[4])+"/"+str(temp[5])
                 
             if (os.path.exists(url_file_location) == True):
@@ -116,7 +118,14 @@ class Stats(Thread):
                 f=open(str(url_file_location),"a")
                 f.write(u'"'+datatime+'":'+data_string)
             f.close()
-            time.sleep(10)
+            
+            del data
+            del data_string
+            del temp
+            del datatime
+            del network
+
+            time.sleep(generate_time - int(time.time() - start))
 
 class Cliente(Thread):
     def __init__(self, socket_cliente, datos_cliente):
@@ -125,7 +134,6 @@ class Cliente(Thread):
         self.datos = datos_cliente
 
     def run(self):
-        seguir = True
         package = recvpackage(self.socket,4)
         print "package",package
         if (package != ""):
@@ -135,7 +143,6 @@ class Cliente(Thread):
             elif(result[0] == 0):
                 self.socket.send(pack('i',0))
                 self.socket.close()
-                seguir = False
                 #print "client ", self.datos," complete"
 
 #################################### Init code ####################################

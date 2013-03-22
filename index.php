@@ -158,6 +158,7 @@ unlink($return[0]);
     </script>
   </head>
   <body>
+  	<div style="position: relative; height: 40px;clear: both;text-align: center">Pi-py-stats</div>
     <div id="chart_div" style="width: 620px; height: 400px;float: left"></div>
     <div id="chart_div-2" style="width: 620px; height: 400px;float: left"></div>
     <div id="chart_div-3" style="width: 620px; height: 400px;float: left"></div>
