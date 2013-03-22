@@ -104,7 +104,7 @@ class Stats(Thread):
                 "hdd_use_home": psutil.disk_usage('/home')[3],
                 "cpu_use": psutil.cpu_percent(interval=1),#
                 "cpu_mhz": int(os.popen("cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq").read()[:-3]),
-                "temp": 50#int(os.popen("cat /sys/class/thermal/thermal_zone0/temp").read()/1000)
+                "temp": int(os.popen("cat /sys/class/thermal/thermal_zone0/temp").read()/1000)
             }
             data_string = json.dumps(data)
             #print 'ENCODED:', data_string
