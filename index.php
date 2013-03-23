@@ -24,8 +24,15 @@ if ($correct_all == True)
 
 
   unlink($return[0]);
+  $network = "";
+  $cpu_use = "";
+  $swap = "";
+  $ram = "";
+  $hdd = "";
+  $temperature = "";
   foreach($data as $fecha => $datos)
   {
+    
     $network .= "['".$fecha."',".$datos['network_down'].", ".$datos['network_up']."],";
     $cpu_use .= "['".$fecha."',".$datos['cpu_use']."],";
     $swap .= "['".$fecha."',".$datos['swap_used']."],";
