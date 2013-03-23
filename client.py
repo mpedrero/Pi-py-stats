@@ -70,20 +70,7 @@ def md5_for_file(url_file):
         for chunk in iter(lambda: f.read(8192), b''): 
             md5.update(chunk)
     return md5.hexdigest()
-def pick_speed(secs):
-
-    value = psutil.network_io_counters(pernic=True)
-    sub = value['eth0'][0]
-    down = value['eth0'][1]
-    time.sleep(secs)
-    value = psutil.network_io_counters(pernic=True)
-
-    actual_sub = int(((value['eth0'][0] - sub) * 0.0009765625 ) / secs)
-    actual_down = int(((value['eth0'][1] - down) * 0.0009765625) / secs)
-    return {
-            'up': actual_sub,
-            'down': actual_down
-            }
+    
 #################################### Hard code ####################################
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
