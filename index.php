@@ -33,7 +33,7 @@ if ($correct_all == True)
   foreach($data as $fecha => $datos)
   {
     
-    $network .= "['".$fecha."',".$datos['network_down'].", ".$datos['network_up']."],";
+    $network .= "['".$fecha."',".$datos['network_down'].", ".$datos['network_up'].",".$datos['network_avg_down'].", ".$datos['network_avg_up']."],";
     $cpu_use .= "['".$fecha."',".$datos['cpu_use']."],";
     $swap .= "['".$fecha."',".$datos['swap_used']."],";
     $ram .= "['".$fecha."',".$datos['cache'].",".$datos['buffer'].",".$datos['used']."],";

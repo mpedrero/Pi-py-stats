@@ -63,7 +63,7 @@ def md5_for_file(url_file):
         for chunk in iter(lambda: f.read(8192), b''): 
             md5.update(chunk)
     return md5.hexdigest()
-def pick_speed(secs):
+def pick_speed_in_secs(secs):
 
     value = psutil.network_io_counters(pernic=True)
     sub = value['eth0'][0]
@@ -74,31 +74,44 @@ def pick_speed(secs):
     actual_sub = int(((value['eth0'][0] - sub) * 0.0009765625 ) / secs)
     actual_down = int(((value['eth0'][1] - down) * 0.0009765625) / secs)
     return [actual_sub,actual_down]
+def pick_speed_avg(value):
+    sub = value['eth0'][0]
+    down = value['eth0'][1]
+    value = psutil.network_io_counters(pernic=True)
+
+    avg_sub = int(((value['eth0'][0] - sub) * 0.0009765625 ) / generate_time)
+    avg_down = int(((value['eth0'][1] - down) * 0.0009765625) / generate_time)
+    return [avg_sub, avg_down, value]
 #################################### Hard code ####################################
 class Stats(Thread):
     def __init__(self):
         Thread.__init__(self)
         #self.socket = socket_cliente
         #self.datos = datos_cliente
-
+    
     def run(self):
+        speed_avg = psutil.network_io_counters(pernic=True)
         seguir = True
         while seguir:
             #calculate time generate stats
             start = time.time()
             #calculate stats
             # speed network #
-            network = pick_speed(2)
+            network_actual = pick_speed_in_secs(2)
+            network_avg = pick_speed_avg(speed_avg);
+            speed_avg = network_avg[2];
             # pack all #
             data = {
-                "network_down": network[1],#
-                "network_up": network[0],#
+                "network_down": network_actual[1],#
+                "network_up": network_actual[0],#
+                "network_avg_down": network_avg[1],#
+                "network_avg_up": network_avg[0],#
                 "cache": psutil.cached_phymem(),#
                 "buffer": psutil.phymem_buffers(),#
-                "ava": psutil.avail_phymem(),#
+                #"ava": psutil.avail_phymem(),#
                 "used": psutil.used_phymem(),#
                 "swap_total": psutil.total_virtmem(),#
-                "swap_ava": psutil.avail_virtmem(),#
+                #"swap_ava": psutil.avail_virtmem(),#
                 "swap_used": psutil.used_virtmem(),#
                 "hdd_use_": psutil.disk_usage('/')[3],
                 "hdd_use_home": psutil.disk_usage('/home')[3],
@@ -123,7 +136,7 @@ class Stats(Thread):
             del data_string
             del temp
             del datatime
-            del network
+            del network_actual
 
             time.sleep(generate_time - int(time.time() - start))
 
