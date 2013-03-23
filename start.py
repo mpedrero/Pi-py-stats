@@ -13,7 +13,7 @@ import os.path
 #################################### Globals ####################################
 
 url_file_location = "/tmp/pi-py-stats.json"
-generate_time = 10*60 # seconds
+generate_time = 10 # seconds
 #################################### Functions network ####################################
 def recvpackage(socket_cliente,size_package):
     package = socket_cliente.recv(int(size_package))
@@ -81,6 +81,12 @@ def pick_speed_avg(value):
 
     avg_sub = int(((value['eth0'][0] - sub) * 0.0009765625 ) / generate_time)
     avg_down = int(((value['eth0'][1] - down) * 0.0009765625) / generate_time)
+    #Only use in start script
+    if (avg_sub < 0):
+        avg_sub = 0
+    if (avg_down < 0):
+        avg_down = 0
+    #Only use in start script
     return [avg_sub, avg_down, value]
 #################################### Hard code ####################################
 class Stats(Thread):
@@ -108,10 +114,8 @@ class Stats(Thread):
                 "network_avg_up": network_avg[0],#
                 "cache": psutil.cached_phymem(),#
                 "buffer": psutil.phymem_buffers(),#
-                #"ava": psutil.avail_phymem(),#
                 "used": psutil.used_phymem(),#
                 "swap_total": psutil.total_virtmem(),#
-                #"swap_ava": psutil.avail_virtmem(),#
                 "swap_used": psutil.used_virtmem(),#
                 "hdd_use_": psutil.disk_usage('/')[3],
                 "hdd_use_home": psutil.disk_usage('/home')[3],
@@ -124,12 +128,21 @@ class Stats(Thread):
             temp = time.localtime(start)
             datatime = str(temp[2])+"/"+str(temp[1])+"/"+str(temp[0])+" "+str(temp[3])+"/"+str(temp[4])+"/"+str(temp[5])
                 
-            if (os.path.exists(url_file_location) == True):
-                f=codecs.open(str(url_file_location),"a", "utf-8")
-                f.write(', '+'"'+datatime+'":'+data_string)
+            if (os.path.exists(url_file_location) != True):
+                data = {
+                    "ava": psutil.avail_phymem(),#
+                    "swap_ava": psutil.avail_virtmem(),#
+                }
+                data_string_2 = json.dumps(data)
+                tmp = True
             else:
-                f=open(str(url_file_location),"a")
-                f.write(u'"'+datatime+'":'+data_string)
+                tmp = False
+
+            f=open(str(url_file_location),"a")
+            if (tmp == True):
+                f.write('"data":'+data_string_2)
+            f.write(', '+'"'+datatime+'":'+data_string)
+
             f.close()
             
             del data

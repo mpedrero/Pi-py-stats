@@ -32,13 +32,20 @@ if ($correct_all == True)
   $temperature = "";
   foreach($data as $fecha => $datos)
   {
-    
-    $network .= "['".$fecha."',".$datos['network_down'].", ".$datos['network_up'].",".$datos['network_avg_down'].", ".$datos['network_avg_up']."],";
-    $cpu_use .= "['".$fecha."',".$datos['cpu_use']."],";
-    $swap .= "['".$fecha."',".$datos['swap_used']."],";
-    $ram .= "['".$fecha."',".$datos['cache'].",".$datos['buffer'].",".$datos['used']."],";
-    $hdd .= "['".$fecha."',".$datos['hdd_use_'].",".$datos['hdd_use_home']."],";
-    $temperature .= "['".$fecha."',".$datos['temp']."],";
+    if ($fecha == "data")
+    {
+      $ram_ava = $datos['ava'];
+      $swap_ava = $datos['swap_ava'];
+    }
+    else
+    {
+      $network .= "['".$fecha."',".$datos['network_down'].", ".$datos['network_up'].",".$datos['network_avg_down'].", ".$datos['network_avg_up']."],";
+      $cpu_use .= "['".$fecha."',".$datos['cpu_use']."],";
+      $swap .= "['".$fecha."',".$datos['swap_used']."],";
+      $ram .= "['".$fecha."',".$datos['cache'].",".$datos['buffer'].",".$datos['used']."],";
+      $hdd .= "['".$fecha."',".$datos['hdd_use_'].",".$datos['hdd_use_home']."],";
+      $temperature .= "['".$fecha."',".$datos['temp']."],";
+    }
     
   }
   ?>
@@ -50,7 +57,7 @@ if ($correct_all == True)
         google.setOnLoadCallback(drawChart);
         function drawChart() {
           var data = google.visualization.arrayToDataTable([
-            ['date',  'down', 'up'],
+            ['date',  'down', 'up', 'avg_down', 'avg_up'],
             <?php
               echo $network;
             ?>
@@ -98,7 +105,7 @@ if ($correct_all == True)
 
           var options = {
             title: 'swap',
-            hAxis: {title: 'swap',  titleTextStyle: {color: 'red'}}
+            hAxis: {title: 'swap: (max size: <?php echo $swap_ava;?>)',  titleTextStyle: {color: 'red'}}
           };
 
           var chart = new google.visualization.AreaChart(document.getElementById('chart_div-3'));
@@ -118,7 +125,7 @@ if ($correct_all == True)
 
           var options = {
             title: 'ram',
-            hAxis: {title: 'ram',  titleTextStyle: {color: 'red'}}
+            hAxis: {title: 'ram: (max size: <?php echo $ram_ava;?>)',  titleTextStyle: {color: 'red'}}
           };
 
           var chart = new google.visualization.AreaChart(document.getElementById('chart_div-4'));
