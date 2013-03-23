@@ -13,7 +13,7 @@ import os.path
 #################################### Globals ####################################
 
 url_file_location = "/tmp/pi-py-stats.json"
-generate_time = 10 # seconds
+generate_time = 10*60 # seconds
 #################################### Functions network ####################################
 def recvpackage(socket_cliente,size_package):
     package = socket_cliente.recv(int(size_package))
@@ -104,7 +104,7 @@ class Stats(Thread):
                 "hdd_use_home": psutil.disk_usage('/home')[3],
                 "cpu_use": psutil.cpu_percent(interval=1),#
                 "cpu_mhz": int(os.popen("cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq").read()[:-3]),
-                "temp": int(os.popen("cat /sys/class/thermal/thermal_zone0/temp").read()/1000)
+                "temp": int(int(os.popen("cat /sys/class/thermal/thermal_zone0/temp").read())/1000)
             }
             data_string = json.dumps(data)
             #print 'ENCODED:', data_string
