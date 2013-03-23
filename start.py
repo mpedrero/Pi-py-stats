@@ -13,7 +13,7 @@ import os.path
 #################################### Globals ####################################
 
 url_file_location = "/tmp/pi-py-stats.json"
-generate_time = 10 # seconds
+generate_time = 10*60 # seconds
 #################################### Functions network ####################################
 def recvpackage(socket_cliente,size_package):
     package = socket_cliente.recv(int(size_package))

@@ -1,5 +1,5 @@
 <?php
-#?ip=xx.xx.xx.xx&port=xxxx
+#?ip=xx.xx.xx.xx&port=xxxx&from=0&to=10
 $correct_all = False;
 $options = array(
     'options' => array(
@@ -12,6 +12,28 @@ if (filter_var($_GET["ip"], FILTER_VALIDATE_IP))
   if (filter_var($_GET["port"], FILTER_VALIDATE_INT, $options) !== FALSE)
   {
     $correct_all = True;
+    if (isset($_GET["from"]))
+    {
+      if (filter_var($_GET["from"], FILTER_VALIDATE_INT) !== FALSE)
+      {
+        $from = $_GET["from"];
+      }
+    }
+    else
+    {
+      $from = 0;
+    }
+    if (isset($_GET["to"]))
+    {
+      if (filter_var($_GET["to"], FILTER_VALIDATE_INT) !== FALSE)
+      {
+        $to = $_GET["to"];
+      }
+    }
+    else
+    {
+      $to = 0;
+    }
   }
 }
 if ($correct_all == True)
@@ -30,6 +52,11 @@ if ($correct_all == True)
   $ram = "";
   $hdd = "";
   $temperature = "";
+  $count = 0;
+  if ($to == 0)
+  {
+    $to = count($data);
+  }
   foreach($data as $fecha => $datos)
   {
     if ($fecha == "data")
@@ -39,14 +66,17 @@ if ($correct_all == True)
     }
     else
     {
-      $network .= "['".$fecha."',".$datos['network_down'].", ".$datos['network_up'].",".$datos['network_avg_down'].", ".$datos['network_avg_up']."],";
-      $cpu_use .= "['".$fecha."',".$datos['cpu_use']."],";
-      $swap .= "['".$fecha."',".$datos['swap_used']."],";
-      $ram .= "['".$fecha."',".$datos['cache'].",".$datos['buffer'].",".$datos['used']."],";
-      $hdd .= "['".$fecha."',".$datos['hdd_use_'].",".$datos['hdd_use_home']."],";
-      $temperature .= "['".$fecha."',".$datos['temp']."],";
+      if ($from < $count and $to > $count)
+      {
+        $network .= "['".$fecha."',".$datos['network_down'].", ".$datos['network_up'].",".$datos['network_avg_down'].", ".$datos['network_avg_up']."],";
+        $cpu_use .= "['".$fecha."',".$datos['cpu_use']."],";
+        $swap .= "['".$fecha."',".$datos['swap_used']."],";
+        $ram .= "['".$fecha."',".$datos['cache'].",".$datos['buffer'].",".$datos['used']."],";
+        $hdd .= "['".$fecha."',".$datos['hdd_use_'].",".$datos['hdd_use_home']."],";
+        $temperature .= "['".$fecha."',".$datos['temp']."],";
+      }
     }
-    
+    $count ++;
   }
   ?>
   <html>
