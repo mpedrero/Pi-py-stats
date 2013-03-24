@@ -205,6 +205,7 @@ if ($correct_all == True)
     </head>
     <body>
       <div style="position: relative; clear: both;text-align: center"><h1>Pi-py-stats</h1></div>
+      <div style="position: relative; clear: both;text-align: center">Data receive: <?php echo count($data);?></div>
       <div id="chart_div" style="width: 620px; height: 400px;float: left"></div>
       <div id="chart_div-2" style="width: 620px; height: 400px;float: left"></div>
       <div id="chart_div-3" style="width: 620px; height: 400px;float: left"></div>

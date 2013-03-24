@@ -81,7 +81,7 @@ type_calc = 1
 s.send(pack('i',type_calc))
 if (type_calc == 1):
 	s.send(pack('i',1)) # pido archivo
-	url = '/var/www/temp/'+str(random.randint(1, 999999999999))+'.json'
+	url = 'temp/'+str(random.randint(1, 999999999999))+'.json'
 	recvfile(s,"datos",url)
 	print url #return php
 	s.send(pack('i',1)) # stop

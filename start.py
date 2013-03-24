@@ -12,7 +12,7 @@ from threading import Thread
 import os.path
 #################################### Globals ####################################
 
-url_file_location = "/tmp/pi-py-stats.json"
+url_file_location = "/var/log/pi-py-stats.json"
 generate_time = 10*60 # seconds
 #################################### Functions network ####################################
 def recvpackage(socket_cliente,size_package):
@@ -107,6 +107,10 @@ class Stats(Thread):
             network_avg = pick_speed_avg(speed_avg);
             speed_avg = network_avg[2];
             # pack all #
+            try:
+                temperature = int(int(os.popen("cat /sys/class/thermal/thermal_zone0/temp").read())/1000)
+            except:
+                temperature = 40
             data = {
                 "network_down": network_actual[1],#
                 "network_up": network_actual[0],#
@@ -121,7 +125,7 @@ class Stats(Thread):
                 "hdd_use_home": psutil.disk_usage('/home')[3],
                 "cpu_use": psutil.cpu_percent(interval=1),#
                 "cpu_mhz": int(os.popen("cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq").read()[:-3]),
-                "temp": int(int(os.popen("cat /sys/class/thermal/thermal_zone0/temp").read())/1000)
+                "temp": temperature
             }
             data_string = json.dumps(data)
             #print 'ENCODED:', data_string
@@ -150,6 +154,7 @@ class Stats(Thread):
             del temp
             del datatime
             del network_actual
+            del temperature
 
             time.sleep(generate_time - int(time.time() - start))
 
